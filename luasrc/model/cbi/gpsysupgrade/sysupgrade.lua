@@ -15,9 +15,9 @@ function check_update()
 		needs_update, notice = false, false
 		remote_version = luci.sys.exec("echo -n $(curl -s https://github.com/yuwentao114/Actions-OpenWrt/releases/download/" ..model.. "/version.txt)")
 		updatelogs = luci.sys.exec("curl -s https://github.com/yuwentao114/Actions-OpenWrt/releases/download/" ..model.. "/updatelogs.txt")
-		remoteformat = luci.sys.exec("date -d $(echo " ..remote_version.. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
+		remoteformat = luci.sys.exec("date -d $(echo " ..remote_version.. " | awk 'NR==1'")
 		fnotice = luci.sys.exec("echo -n " ..remote_version.. " | sed -n '/\\.$/p'")
-		dateyr = luci.sys.exec("echo -n " ..remote_version.. " | awk -F. '{printf $1\".\"$2}'")
+		dateyr = luci.sys.exec("echo -n " ..remote_version.. " | awk 'NR==1'")
 		if remoteformat > sysverformat then
 			needs_update = true
 			if currentTimeStamp > remoteformat or fnotice ~= "" then
@@ -29,7 +29,7 @@ end
 function to_check()
     if not model or model == "" then model = api.auto_get_model() end
 	system_version = get_system_version()
-	sysverformat = luci.sys.exec("date -d $(echo " ..system_version.. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
+	sysverformat = luci.sys.exec("date -d $(echo " ..system_version.. " | awk 'NR==1'")
 	currentTimeStamp = luci.sys.exec("expr $(date -d \"$(date '+%Y-%m-%d %H:%M:%S')\" +%s) - 172800")
 	if model == "x86_64" then
 		check_update()
